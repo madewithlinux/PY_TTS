@@ -1,13 +1,16 @@
-# Import necessary libraries
-import os, io
+import io
+import json
+from pathlib import Path
 from gtts import gTTS
 from twitchio import Message
 from twitchio.ext import commands
-from dotenv import load_dotenv
 import pygame
 
-# Load environment variables
-load_dotenv()
+# Load twitch credentials
+credentials_path = Path('credentials.json')
+credentials = json.loads(credentials_path.read_text())
+token = credentials['token']
+initial_channels = credentials['initial_channels']
 
 # Initialize Pygame and Pygame.mixer
 pygame.init()
@@ -38,7 +41,7 @@ class Bot(commands.Bot):
     def __init__(self):
         # Call the constructor of the parent class with the Twitch API token and prefix
         # Also specify the initial channels to join
-        super().__init__(token=os.getenv('token'), prefix='?', initial_channels=[os.getenv('initial_channels'),])
+        super().__init__(token=token, prefix='?', initial_channels=[initial_channels,])
 
     # Define an event handler for when the bot is ready to start processing events
     async def event_ready(self):
