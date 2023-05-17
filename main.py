@@ -1,6 +1,7 @@
 # Import necessary libraries
 import os, io
 from gtts import gTTS
+from twitchio import Message
 from twitchio.ext import commands
 from dotenv import load_dotenv
 import pygame
@@ -12,10 +13,14 @@ load_dotenv()
 pygame.init()
 pygame.mixer.init()
 
+def message_event_to_text(message: Message) -> str:
+    # TODO: replace repeated underscores with other stuff
+    return f'{message.author.display_name}: {message.content}'
+
 # Define function to convert message to audio content
 def tts_message(message):
     # Set the language for the text-to-speech conversion
-    lingua = 'it'
+    lingua = 'en'
     # Create a gTTS object with the message and language
     tts = gTTS(text=message, lang=lingua)
     # Create an empty byte stream to write the audio content to
@@ -40,9 +45,10 @@ class Bot(commands.Bot):
         print(f'Logged in as | {self.nick}')
 
     # Define an event handler for when a message is received
-    async def event_message(self, message):
+    async def event_message(self, message: Message):
+        message_text = message_event_to_text(message)
         # Load the audio content for the message into the Pygame mixer
-        pygame.mixer.music.load(tts_message(message.content))
+        pygame.mixer.music.load(tts_message(message_text))
         # Play the audio content
         pygame.mixer.music.play()
         # Print the message to the console
